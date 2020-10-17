@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="css/materialize.min.css" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#00897B" />
+    <meta name="theme-color" content="#f39233" />
   </head>
   <body>
 
@@ -25,9 +25,26 @@
     <script src="js/app.js"></script>
 
     <div class="row">
-      <div class="col s12 m7" id="sofa">
+      <div class="col s12" id="sofa">
       </div>
   </div>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function() {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .then(function() {
+            console.log("ServiceWorker registration is successful!");
+          })
+          .catch(function() {
+            console.log("ServiceWorker registrationis failed!");
+          });
+      });
+    } else {
+      console.log("ServiceWorker is not supported.");
+    }
+  </script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {

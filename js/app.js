@@ -15,22 +15,22 @@ var firebaseConfig = {
       var sofasHTML = "";
         dbref.on("child_added", snapshot =>{
             let sofa = snapshot.val()
-            sofasHTML += `
-              <div class="card">
-                <a href="./sofa.html?id=${sofa.id}">
-                  <div class="card-image waves-effect waves-block waves-light">
-                    <img src="${sofa.image}" />
-                  </div>
-                </a>
-                <div class="card-content">
-                  <span class="card-title truncate">${sofa.product_name}</span>
-                  <p>${sofa.price}</p>
+            if(sofa.id != localStorage.getItem("visited")){
+                sofasHTML += `
+                <div class="card">
+                    <a href="./sofa.html?id=${sofa.id}">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img src="${sofa.image}" />
+                    </div>
+                    </a>
+                    <div class="card-content">
+                    <span class="card-title truncate">${sofa.product_name}</span>
+                    <p>Price Rp.${sofa.price}</p>
+                    </div>
                 </div>
-              </div>
-            `;
-            // console.log("Nama",sofa.product_name);
-            // console.log("Price",sofa.price);
-            document.getElementById("sofa").innerHTML = sofasHTML;
+                `;
+                document.getElementById("sofa").innerHTML = sofasHTML;
+            }
     });
   }
 
@@ -38,6 +38,8 @@ var firebaseConfig = {
     var urlParams = new URLSearchParams(window.location.search);
     var idParam = urlParams.get("id");
 
+    localStorage.setItem("visited", idParam);
+    
     const dbRef = firebase.database().ref().child(idParam);
     dbRef.once("value").then(function(snapshot){
         var sofa = snapshot.val()
@@ -48,12 +50,38 @@ var firebaseConfig = {
           </div>
           <div class="card-content">
             <span class="card-title">${sofa.product_name}</span>
-            <span class="card-title">${sofa.price}</span>
-            <span class="card-title">${sofa.material}</span>
-            <span class="card-title">${sofa.dimension}</span>
+            <span class="card-title">Price Rp. ${sofa.price}</span>
+            <span class="card-title">Material: ${sofa.material}</span>
+            <span class="card-title">Dimension: ${sofa.dimension}</span>
+            <span class="card-title">Colors: ${sofa.colors}</span>
           </div>
         </div>
       `;
           document.getElementById("body-content").innerHTML = sofasHTML;
+          getSimilarSofa(sofa.id, sofa.colors);
     });
   }
+
+  function getSimilarSofa(id, colors){
+    const dbref = firebase.database().ref();
+    var sofasHTML = "";
+    dbref.on("child_added", snapshot =>{
+        let sofa = snapshot.val()
+        if(sofa.id != id && sofa.colors == colors){
+        sofasHTML += `
+          <div class="card">
+            <a href="./sofa.html?id=${sofa.id}">
+              <div class="card-image waves-effect waves-block waves-light">
+                <img src="${sofa.image}" />
+              </div>
+            </a>
+            <div class="card-content">
+              <span class="card-title truncate">${sofa.product_name}</span>
+              <p>Price Rp. ${sofa.price}</p>
+            </div>
+          </div>
+        `;
+        }
+        document.getElementById("similar_sofa").innerHTML = sofasHTML;
+    });
+    }
